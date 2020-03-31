@@ -1,0 +1,23 @@
+{
+  "slug": "Kat",
+  "name": "Kat",
+  "version": "1.0.0",
+  "license": "proprietary",
+  "brand": "Kat",
+  "author": "",
+  "authorEmail": "",
+  "authorUrl": "",
+  "pluginUrl": "",
+  "manualUrl": "",
+  "sourceUrl": "",
+  "donateUrl": "",
+  "changelogUrl": "",
+  "modules": [
+    {
+      "slug": "Shh",
+      "name": "Shh",
+      "description": "",
+      "tags": []
+    }
+  ]
+}
