@@ -48,10 +48,10 @@ struct Shh : Module {
 
 
 		// goes through every input
-		for(int i = 0; i < NUM_OUTPUTS){
+		for(int i = 0; i < NUM_OUTPUTS; i++){
 			// if the CV voltage is above the threshold, allow audio to pass through (and turn the LED on)
 			if(inputs[i].getVoltage() > voltThreshold){
-				outputs[i].setVoltage(inputs[(2*i) - 1].getVoltage());
+				outputs[i].setVoltage(inputs[NUM_OUTPUTS+i].getNormalVoltage(0.0f));
 				lights[i].setBrightness(0.9f);
 			}else{
 				// otherwise just send no voltage, and turn the LED off
