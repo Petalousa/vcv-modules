@@ -41,6 +41,9 @@ struct MidiReader : Module {
 	}
 
 
+	void setFile(std::string filepath){
+		this->fileUri = filepath;
+	}
 
 	void process(const ProcessArgs& args) override {
 		float voltThreshold = 2.5f;
@@ -56,7 +59,7 @@ struct MidiReader : Module {
 			isPlaying = false;
 		}
 		if (loadTrigger.process(loadTapped)){
-			
+			loadMidi();
 		}
 
 		if(isPlaying){
@@ -71,26 +74,35 @@ struct MidiReader : Module {
 			lights[LOAD_LIGHT].setBrightness(0.0f);
 		}
 	}
+
+	void loadMidi(){
+		isFileLoaded = true;
+
+		// TODO!
+	}
 	
-	/*
 	json_t* dataToJson() override {
 		json_t *rootJ = json_object();
+
 		json_object_set_new(rootJ, "file", json_string(fileUri.c_str()));
+		
 		return rootJ;
 	}
 
 	void dataFromJson(json_t* rootJ) override {
-		json_t *fileJson = json_object_get(rootJ, "file");
-		if(fileJson) {
-			fileUri = json_string_value(fileJson);
-		}
+		json_t* textJ = json_object_get(rootJ, "file");
+		if (textJ)
+			this->fileUri = json_string_value(textJ);
 	}
+
+	
 	void onReset() override {
 		fileUri = "";
 		isFileLoaded = false;
 		isPlaying = false;
 	}
-	*/
+	
+	
 };
 
 
@@ -119,13 +131,10 @@ struct MidiReaderWidget : ModuleWidget {
 		addChild(createLightCentered<MediumLight<GreenLight>>(mm2px(Vec(20.877, 35.128)), module, MidiReader::PLAY_LIGHT));
 		addChild(createLightCentered<MediumLight<GreenLight>>(mm2px(Vec(20.877, 72.334)), module, MidiReader::LOAD_LIGHT));
 		
-		/*
 		textField = createWidget<LedDisplayTextField>(mm2px(Vec(4.5, 15.0)));
+//		textField->text = module->fileUri;
 		textField->box.size = mm2px(Vec(44.0, 14.0));
-		textField->text = module->fileUri;
-		textField->multiline = false;
 		addChild(textField); 
-		*/
 	}
 
 };
