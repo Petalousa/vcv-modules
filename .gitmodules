@@ -1,0 +1,4 @@
+[submodule "dep/midifile"]
+	path = midifile
+	url = https://github.com/craigsapp/midifile.git
+	ignore = untracked

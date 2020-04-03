@@ -19,13 +19,19 @@ struct MidiReader : Module {
 		NUM_OUTPUTS
 	};
 	enum LightIds {
+		PLAY_LIGHT,
+		LOAD_LIGHT,
 		NUM_LIGHTS
 	};
+
+
+	std::string fileUri = "";
+	bool isFileLoaded = false;
+	bool isPlaying = false;
 
 	dsp::BooleanTrigger playTrigger;
 	dsp::BooleanTrigger stopTrigger;
 	dsp::BooleanTrigger loadTrigger;
-	
 
 	MidiReader() {
 		config(NUM_PARAMS, NUM_INPUTS, NUM_OUTPUTS, NUM_LIGHTS);
@@ -44,18 +50,47 @@ struct MidiReader : Module {
 		bool loadTapped = params[LOAD_PARAM].getValue() > 0.0f;
 
 		if (playTrigger.process(playTapped)){
-			// play button hit
+			isPlaying = true;
 		}
 		if (stopTrigger.process(stopTapped)){
-			// stop button hit
+			isPlaying = false;
 		}
 		if (loadTrigger.process(loadTapped)){
-			// load button hit
+			
 		}
 
+		if(isPlaying){
+			lights[PLAY_LIGHT].setBrightness(1.0f);
+		}else{
+			lights[PLAY_LIGHT].setBrightness(0.0f);
+		}
+
+		if(isFileLoaded){
+			lights[LOAD_LIGHT].setBrightness(1.0f);
+		}else{
+			lights[LOAD_LIGHT].setBrightness(0.0f);
+		}
+	}
+	
+	/*
+	json_t* dataToJson() override {
+		json_t *rootJ = json_object();
+		json_object_set_new(rootJ, "file", json_string(fileUri.c_str()));
+		return rootJ;
 	}
 
-	
+	void dataFromJson(json_t* rootJ) override {
+		json_t *fileJson = json_object_get(rootJ, "file");
+		if(fileJson) {
+			fileUri = json_string_value(fileJson);
+		}
+	}
+	void onReset() override {
+		fileUri = "";
+		isFileLoaded = false;
+		isPlaying = false;
+	}
+	*/
 };
 
 
@@ -71,22 +106,28 @@ struct MidiReaderWidget : ModuleWidget {
 		addChild(createWidget<ScrewSilver>(Vec(RACK_GRID_WIDTH, RACK_GRID_HEIGHT - RACK_GRID_WIDTH)));
 		addChild(createWidget<ScrewSilver>(Vec(box.size.x - 2 * RACK_GRID_WIDTH, RACK_GRID_HEIGHT - RACK_GRID_WIDTH)));
 
-		addParam(createParamCentered<LEDBezel>(mm2px(Vec(21.375, 31.412)), module, MidiReader::PLAY_PARAM));
-		addParam(createParamCentered<LEDBezel>(mm2px(Vec(21.375, 45.865)), module, MidiReader::STOP_PARAM));
-		addParam(createParamCentered<LEDBezel>(mm2px(Vec(21.375, 60.318)), module, MidiReader::LOAD_PARAM));
+		addParam(createParamCentered<LEDBezel>(mm2px(Vec(21.375 + 6.0, 31.412 + 8.0)), module, MidiReader::PLAY_PARAM));
+		addParam(createParamCentered<LEDBezel>(mm2px(Vec(21.375 + 6.0, 45.865 + 12.55)), module, MidiReader::STOP_PARAM));
+		addParam(createParamCentered<LEDBezel>(mm2px(Vec(21.375 + 6.0, 60.318 + 16.3)), module, MidiReader::LOAD_PARAM));
 
-		addInput(createInputCentered<PJ301MPort>(mm2px(Vec(31.712, 31.506)), module, MidiReader::PLAY_INPUT));
-		addInput(createInputCentered<PJ301MPort>(mm2px(Vec(31.712, 46.005)), module, MidiReader::STOP_INPUT));
+		addInput(createInputCentered<PJ301MPort>(mm2px(Vec(31.712 + 9.0, 31.506 + 8.0)), module, MidiReader::PLAY_INPUT));
+		addInput(createInputCentered<PJ301MPort>(mm2px(Vec(31.712 + 9.0, 46.005 + 12.55)), module, MidiReader::STOP_INPUT));
 
-		addOutput(createOutputCentered<PJ301MPort>(mm2px(Vec(9.916 + 5.0, 84.686 + 20.0)), module, MidiReader::CV_OUTPUT));
-		addOutput(createOutputCentered<PJ301MPort>(mm2px(Vec(24.883 + 5.0, 84.686 + 20.0)), module, MidiReader::GATE_OUTPUT));
-		// + 
-
-		textField = createWidget<LedDisplayTextField>(mm2px(Vec(4.5, 16.0)));
-		textField->box.size = mm2px(Vec(36.0, 10.657));
-		textField->multiline = true;
-		addChild(textField);
+		addOutput(createOutputCentered<PJ301MPort>(mm2px(Vec(9.916 + 3.3, 84.686 + 23.7)), module, MidiReader::CV_OUTPUT));
+		addOutput(createOutputCentered<PJ301MPort>(mm2px(Vec(24.883 + 6.5, 84.686 + 23.7)), module, MidiReader::GATE_OUTPUT));
+	
+		addChild(createLightCentered<MediumLight<GreenLight>>(mm2px(Vec(20.877, 35.128)), module, MidiReader::PLAY_LIGHT));
+		addChild(createLightCentered<MediumLight<GreenLight>>(mm2px(Vec(20.877, 72.334)), module, MidiReader::LOAD_LIGHT));
+		
+		/*
+		textField = createWidget<LedDisplayTextField>(mm2px(Vec(4.5, 15.0)));
+		textField->box.size = mm2px(Vec(44.0, 14.0));
+		textField->text = module->fileUri;
+		textField->multiline = false;
+		addChild(textField); 
+		*/
 	}
+
 };
 
 
