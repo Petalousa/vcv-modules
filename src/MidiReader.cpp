@@ -107,6 +107,7 @@ struct MidiReader : Module {
 
 
 struct MidiReaderWidget : ModuleWidget {
+
 	TextField* textField;
 
 	MidiReaderWidget(MidiReader* module) {
@@ -132,7 +133,7 @@ struct MidiReaderWidget : ModuleWidget {
 		addChild(createLightCentered<MediumLight<GreenLight>>(mm2px(Vec(20.877, 72.334)), module, MidiReader::LOAD_LIGHT));
 		
 		textField = createWidget<LedDisplayTextField>(mm2px(Vec(4.5, 15.0)));
-//		textField->text = module->fileUri;
+		//textField->text = module->fileUri;
 		textField->box.size = mm2px(Vec(44.0, 14.0));
 		addChild(textField); 
 	}
