@@ -1,3 +1,4 @@
+
 #include "plugin.hpp"
 
 
@@ -33,6 +34,8 @@ struct MidiReader : Module {
 	dsp::BooleanTrigger stopTrigger;
 	dsp::BooleanTrigger loadTrigger;
 
+	TextField *textField;
+
 	MidiReader() {
 		config(NUM_PARAMS, NUM_INPUTS, NUM_OUTPUTS, NUM_LIGHTS);
 		configParam(PLAY_PARAM, 0.f, 1.f, 0.f, "");
@@ -40,6 +43,9 @@ struct MidiReader : Module {
 		configParam(LOAD_PARAM, 0.f, 1.f, 0.f, "");
 	}
 
+	void setTextField(TextField *textField){
+		this->textField = textField;
+	}
 
 	void setFile(std::string filepath){
 		this->fileUri = filepath;
@@ -105,11 +111,18 @@ struct MidiReader : Module {
 	
 };
 
+struct LoadFileItem : MenuItem {
+	MidiReader* module;
+	
+	void onAction(const event::Action& e) override {
+		module->fileUri = "yellow";
+	}
+}
 
 struct MidiReaderWidget : ModuleWidget {
 
 	TextField* textField;
-
+	
 	MidiReaderWidget(MidiReader* module) {
 		setModule(module);
 		setPanel(APP->window->loadSvg(asset::plugin(pluginInstance, "res/MidiReader.svg")));
@@ -131,11 +144,12 @@ struct MidiReaderWidget : ModuleWidget {
 	
 		addChild(createLightCentered<MediumLight<GreenLight>>(mm2px(Vec(20.877, 35.128)), module, MidiReader::PLAY_LIGHT));
 		addChild(createLightCentered<MediumLight<GreenLight>>(mm2px(Vec(20.877, 72.334)), module, MidiReader::LOAD_LIGHT));
-		
+	
 		textField = createWidget<LedDisplayTextField>(mm2px(Vec(4.5, 15.0)));
-		//textField->text = module->fileUri;
+		
 		textField->box.size = mm2px(Vec(44.0, 14.0));
-		addChild(textField); 
+		textField->setModule(module);
+		addChild(textField);	
 	}
 
 };

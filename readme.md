@@ -24,8 +24,19 @@ work that I'm using as reference: https://github.com/WrongPeople/WrongPeopleVCV
 
 ## Compiling and Installing Plugin
 
+
+### GENERATE MODULE
+`../Rack-SDK/helper.py createmodule <NAME> res/<NAME>.svg src/<NAME>.cpp`
+
+add the following to plugin.hpp
+`extern Model* <NAME>;`
+
+add the following to plugin.cpp
+`p->addModel(modelLabel);`
+
+### COMPILE
 run the following command in MSYS2 MinGW 64-bit!
 
-```
+```bash
 RACK_DIR="../Rack-SDK" make install
 ```
