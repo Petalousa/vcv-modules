@@ -40,11 +40,18 @@ struct Labeler : Module {
 	}
 
 	void process(const ProcessArgs& args) override {
+		// output the same input voltage
+		for(int i = 0; i < NUM_OUTPUTS; i++){
+			outputs[i].setVoltage(inputs[i].getNormalVoltage(0.0f));
+		}
 	}
 };
 
 
 struct LabelerWidget : ModuleWidget {
+	TextField* textFields[10];
+
+
 	LabelerWidget(Labeler* module) {
 		setModule(module);
 		setPanel(APP->window->loadSvg(asset::plugin(pluginInstance, "res/Labeler.svg")));
@@ -76,6 +83,13 @@ struct LabelerWidget : ModuleWidget {
 		addOutput(createOutput<PJ301MPort>(mm2px(Vec(38.355, 67.136)), module, Labeler::RECT56693_OUTPUT));
 		addOutput(createOutput<PJ301MPort>(mm2px(Vec(38.355, 77.136)), module, Labeler::RECT56695_OUTPUT));
 
+		for(int i =0; i<10; i++){
+			textFields[i] = createWidget<LedDisplayTextField>(mm2px(Vec(14.356, -12.863 + ((float)i*11.271))));
+			textFields[i]->box.size = mm2px(Vec(22.412, 8.212));
+			addChild(textFields[i]);
+		}
+
+		/*
 		// mm2px(Vec(22.412, 8.212))
 		addChild(createWidget<Widget>(mm2px(Vec(14.356, -12.863))));
 		// mm2px(Vec(22.412, 8.212))
@@ -96,7 +110,32 @@ struct LabelerWidget : ModuleWidget {
 		addChild(createWidget<Widget>(mm2px(Vec(14.356, 66.406))));
 		// mm2px(Vec(22.412, 8.212))
 		addChild(createWidget<Widget>(mm2px(Vec(14.356, 77.136))));
+		*/
+
 	}
+
+	json_t* toJson() override {
+			json_t* rootJ = ModuleWidget::toJson();
+
+			// text
+			for(int i = 0; i < 10; i++){
+				json_object_set_new(rootJ, "text" + i, json_string(textFields[i]->text.c_str()));
+			}
+
+			return rootJ;
+		}
+
+		void fromJson(json_t* rootJ) override {
+			ModuleWidget::fromJson(rootJ);
+
+			// text
+			for(int i = 0; i < 10; i++){
+				json_t* textJ = json_object_get(rootJ, "text" + i);
+				if (textJ)
+					textFields[i]->text = json_string_value(textJ);
+			}
+			
+		}
 };
 
 
