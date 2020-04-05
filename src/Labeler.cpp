@@ -61,7 +61,18 @@ struct LabelerWidget : ModuleWidget {
 		addChild(createWidget<ScrewSilver>(Vec(RACK_GRID_WIDTH, RACK_GRID_HEIGHT - RACK_GRID_WIDTH)));
 		addChild(createWidget<ScrewSilver>(Vec(box.size.x - 2 * RACK_GRID_WIDTH, RACK_GRID_HEIGHT - RACK_GRID_WIDTH)));
 
-		addInput(createInput<PJ301MPort>(mm2px(Vec(4.83, -12.863)), module, Labeler::RECT56657_INPUT));
+		float y_base = 12.863f + 2.864f;
+		float y_space = 10.0f;
+		for(int i =0; i<10; i++){
+			addInput(createInput<PJ301MPort>(mm2px(Vec(4.83, y_base + (float)i * y_space)), module, i));
+		}	
+		
+		for(int i =0; i<10; i++){
+			addOutput(createOutput<PJ301MPort>(mm2px(Vec(38.355, y_base + (float)i * y_space)), module, i));
+		}
+
+/*
+		addInput(createInput<PJ301MPort>(mm2px(Vec(4.83, -12.863 + (12.863 + 2.864))), module, Labeler::RECT56657_INPUT));
 		addInput(createInput<PJ301MPort>(mm2px(Vec(4.83, -2.864)), module, Labeler::RECT56659_INPUT));
 		addInput(createInput<PJ301MPort>(mm2px(Vec(4.83, 7.136)), module, Labeler::RECT56661_INPUT));
 		addInput(createInput<PJ301MPort>(mm2px(Vec(4.83, 17.136)), module, Labeler::RECT56663_INPUT));
@@ -82,9 +93,10 @@ struct LabelerWidget : ModuleWidget {
 		addOutput(createOutput<PJ301MPort>(mm2px(Vec(38.355, 57.137)), module, Labeler::RECT56691_OUTPUT));
 		addOutput(createOutput<PJ301MPort>(mm2px(Vec(38.355, 67.136)), module, Labeler::RECT56693_OUTPUT));
 		addOutput(createOutput<PJ301MPort>(mm2px(Vec(38.355, 77.136)), module, Labeler::RECT56695_OUTPUT));
+	*/
 
 		for(int i =0; i<10; i++){
-			textFields[i] = createWidget<LedDisplayTextField>(mm2px(Vec(14.356, -12.863 + ((float)i*11.271))));
+			textFields[i] = createWidget<LedDisplayTextField>(mm2px(Vec(14.356, y_base + (float)i * y_space)));
 			textFields[i]->box.size = mm2px(Vec(22.412, 8.212));
 			addChild(textFields[i]);
 		}
@@ -117,9 +129,13 @@ struct LabelerWidget : ModuleWidget {
 	json_t* toJson() override {
 			json_t* rootJ = ModuleWidget::toJson();
 
+			std::string str;
+			
 			// text
 			for(int i = 0; i < 10; i++){
-				json_object_set_new(rootJ, "text" + i, json_string(textFields[i]->text.c_str()));
+				str = "text";
+				str.append(std::to_string(i));
+				json_object_set_new(rootJ, (str).c_str(), json_string(textFields[i]->text.c_str()));
 			}
 
 			return rootJ;
@@ -128,9 +144,14 @@ struct LabelerWidget : ModuleWidget {
 		void fromJson(json_t* rootJ) override {
 			ModuleWidget::fromJson(rootJ);
 
+			std::string str;
+			
 			// text
 			for(int i = 0; i < 10; i++){
-				json_t* textJ = json_object_get(rootJ, "text" + i);
+				str = "text";
+				str.append(std::to_string(i));
+				
+				json_t* textJ = json_object_get(rootJ, str.c_str());
 				if (textJ)
 					textFields[i]->text = json_string_value(textJ);
 			}
