@@ -10,3 +10,5 @@ extern Plugin* pluginInstance;
 
 // Declare each Model, defined in each module source file
 extern Model* modelShh;
+extern Model* modelMidiReader;
+extern Model* modelLabeler;

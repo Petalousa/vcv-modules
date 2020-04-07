@@ -18,6 +18,20 @@
       "name": "Shh",
       "description": "",
       "tags": []
+    },
+    {
+      "slug": "MidiReader",
+      "name": "MidiReader",
+      "description": "Reads midi from file, outputs CV and Gate",
+      "tags": [
+        "midi"
+      ]
+    },
+    {
+      "slug": "Labeler",
+      "name": "Labeler",
+      "description": "",
+      "tags": []
     }
   ]
 }
